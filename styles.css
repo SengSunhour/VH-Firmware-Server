@@ -28,11 +28,7 @@ body {
   margin: 0;
   color: var(--text);
   background:
-    radial-gradient(
-      circle at top,
-      rgba(42, 140, 213, 0.08),
-      transparent 34rem
-    ),
+    radial-gradient(circle at top, rgba(42, 140, 213, 0.08), transparent 34rem),
     var(--bg);
   font-family:
     Montserrat Regular,
@@ -62,8 +58,7 @@ body {
   color: white;
   background:
     linear-gradient(100deg, rgba(0, 20, 57, 0.94), rgba(0, 20, 57, 0.72)),
-    url("images/circuit-background.png")
-      center / cover no-repeat;
+    url("circuit-background.png") center / cover no-repeat;
   isolation: isolate;
 }
 
