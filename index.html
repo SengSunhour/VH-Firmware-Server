@@ -1,180 +1,304 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#1769e0" />
+    <meta name="theme-color" content="#001439" />
     <title>VHTemidity Slave Setup</title>
+
     <link rel="stylesheet" href="styles.css" />
   </head>
+
   <body>
     <div class="wrap">
       <div class="card">
-        <div class="header-row">
-          <div class="header-text">
-            <h1>VHTemidity Setup</h1>
-            <p class="sub">Configure your slave device.</p>
+        <header class="hero">
+          <div class="hero-top">
+            <div>
+              <h1>The VHTemidity Setup</h1>
+              <p class="sub">Configure the slave device.</p>
+            </div>
+
+            <img
+              class="header-logo"
+              src="images/vh-logo.png"
+              alt="VH Technology Logo"
+            />
           </div>
-          <img
-            class="header-logo"
-            src="images/vh-logo.png"
-            alt="VH Technology Logo"
-          />
-        </div>
+        </header>
 
-        <div class="status">
-          <b>Master status:</b>
-          <span id="connection_status" class="connection-status no-connect">No Connect</span><br />
-          <b>Master WiFi:</b> VH-IOX16-AP<br />
-          <b>Slave IP:</b> 192.168.4.3<br />
-          <b>Setup WiFi:</b> VHTemidity-002<br />
-          <b>Setup IP:</b> 192.168.20.1
-        </div>
+        <div class="content">
+          <section class="status">
+            <div class="status-title">
+              <strong>Device Overview</strong>
+              <span id="connection_status" class="status-online no-connect"
+                >No Connect</span
+              >
+            </div>
 
-        <form
-          onsubmit="
-            event.preventDefault();
-            alert('Preview only');
-          "
-        >
-          <div class="section">
-            <h2>Nearby WiFi</h2>
-            <button type="button" onclick="scanWifi()">Scan</button>
-            <div id="networks"></div>
+            <div class="status-grid">
+              <div class="status-item">
+                <span>Master WiFi</span>
+                <b>VH-IOX16-AP</b>
+              </div>
 
-            <label>Master WiFi name (SSID)</label>
-            <input id="ssid" maxlength="32" required value="VH-IOX16-AP" />
+              <div class="status-item">
+                <span>Slave IP</span>
+                <b>192.168.4.3</b>
+              </div>
 
-            <label>Master WiFi password</label>
-            <div class="password-row">
-              <input
-                id="password"
-                type="password"
-                maxlength="64"
-                value="12345678"
-                aria-describedby="password_alert"
-              />
-              <label class="show-pass">
+              <div class="status-item">
+                <span>Setup WiFi</span>
+                <b>VHTemidity-002</b>
+              </div>
+
+              <div class="status-item">
+                <span>Setup IP</span>
+                <b>192.168.20.1</b>
+              </div>
+            </div>
+          </section>
+
+          <form
+            onsubmit="
+              event.preventDefault();
+              alert('Preview only');
+            "
+          >
+            <section class="section">
+              <div class="section-heading">
+                <div>
+                  <h2>Nearby WiFi</h2>
+                  <p class="section-note">
+                    Connect this Slave to the Master network.
+                  </p>
+                </div>
+              </div>
+
+              <button class="scan-button" type="button" onclick="scanWifi()">
+                Scan WiFi
+              </button>
+
+              <div id="networks"></div>
+
+              <div class="parameter-block">
+                <label for="ssid">Master WiFi name (SSID)</label>
                 <input
+                  id="ssid"
+                  type="text"
+                  maxlength="32"
+                  required
+                  value="VH-IOX16-AP"
+                />
+              </div>
+
+              <div class="parameter-block">
+                <label for="password">Master WiFi password</label>
+                <div class="password-row">
+                  <input
+                    id="password"
+                    type="password"
+                    maxlength="64"
+                    value="12345678"
+                    aria-describedby="password_alert"
+                  />
+
+                  <label class="show-pass">
+                    <input
+                      type="checkbox"
+                      onchange="togglePasswordVisibility('password', this)"
+                    />
+                    Show
+                  </label>
+                </div>
+
+                <small id="password_alert" class="password-alert" role="alert">
+                  Password must be at least 8 characters.
+                </small>
+
+                <small>
+                  Leave blank to keep the saved password for the same SSID.
+                </small>
+              </div>
+
+              <label class="check">
+                <input
+                  id="open_wifi"
                   type="checkbox"
-                  onchange="togglePasswordVisibility('password', this)"
+                  onchange="toggleMasterPassword()"
                 />
-                Show
+                <span>Master WiFi has no password</span>
               </label>
-            </div>
 
-            <small id="password_alert" class="password-alert" role="alert">
-              Password must be at least 8 characters.
-            </small>
+              <label class="check">
+                <input type="checkbox" />
+                <span>Master WiFi is hidden or temporarily unavailable</span>
+              </label>
+            </section>
 
-            <small>
-              Leave blank to keep the saved password for the same SSID.
-            </small>
-
-            <label class="check">
-              <input
-                id="open_wifi"
-                type="checkbox"
-                onchange="toggleMasterPassword()"
-              />
-              Master WiFi has no password
-            </label>
-
-            <label class="check">
-              <input type="checkbox" />
-              Master WiFi is hidden or temporarily unavailable
-            </label>
-          </div>
-
-          <div class="section">
-            <h2>Sensor protection</h2>
-            <label>Critical high temperature (°C)</label>
-            <input type="number" min="-40" max="125" step="0.1" value="40.0" />
-            <small>
-              Used by the Slave as the local high-temperature alert limit.
-            </small>
-          </div>
-
-          <div class="section">
-            <label class="check">
-              <input id="change_ip" type="checkbox" onchange="toggleIp()" />
-              Change Slave setup WiFi IP address
-            </label>
-
-            <div id="ip_fields" class="hidden">
-              <label for="device_ip">Setup IP</label>
-              <input id="device_ip" class="setup-ip-input" type="text"
-                value="192.168.20.1" placeholder="192.168.xxx.xxx"
-                inputmode="decimal" maxlength="15" aria-label="Setup IP address"
-                aria-describedby="device_ip_help device_ip_alert" disabled />
-              <small id="device_ip_alert" class="password-alert" role="alert">
-                Each IP segment must be between 0 and 255.
-              </small>
-              <small id="device_ip_help">
-                Valid range: 192.168.0.0 – 192.168.255.255
-              </small>
-            </div>
-          </div>
-
-          <div class="section">
-            <label class="check">
-              <input
-                id="change_ap"
-                type="checkbox"
-                onchange="toggleSection('change_ap', 'ap_fields')"
-              />
-              Configure Slave Device WiFi
-            </label>
-
-            <div id="ap_fields" class="hidden">
-              <label>Setup WiFi name (SSID)</label>
-              <input id="device_ssid" maxlength="32" value="VHTemidity-002" />
-
-              <label>New setup WiFi password</label>
-              <div class="password-row">
-                <input id="device_password" type="password" maxlength="63"
-                  aria-describedby="device_password_alert" />
-                <label class="show-pass">
-                  <input
-                    type="checkbox"
-                    onchange="togglePasswordVisibility('device_password', this)"
-                  />
-                  Show
-                </label>
+            <section class="section">
+              <div class="section-heading">
+                <div>
+                  <h2>Sensor Protection</h2>
+                  <p class="section-note">
+                    Local high-temperature safety limit.
+                  </p>
+                </div>
               </div>
 
-              <small id="device_password_alert" class="password-alert" role="alert">
-                Password must be at least 8 characters.
-              </small>
-
-              <label>Confirm setup WiFi password</label>
-              <div class="password-row">
+              <div class="parameter-block">
+                <label for="critical_temp"
+                  >Critical high temperature (°C)</label
+                >
                 <input
-                  id="device_password_confirm"
-                  type="password"
-                  maxlength="63"
+                  id="critical_temp"
+                  type="number"
+                  min="-40"
+                  max="125"
+                  step="0.1"
+                  value="40.0"
                 />
-                <label class="show-pass">
-                  <input
-                    type="checkbox"
-                    onchange="
-                      togglePasswordVisibility('device_password_confirm', this)
-                    "
-                  />
-                  Show
-                </label>
+
+                <small>
+                  Used by the Slave as the local high-temperature alert limit.
+                </small>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-heading">
+                <div>
+                  <h2>Setup IP</h2>
+                  <p class="section-note">Optional setup-network IP change.</p>
+                </div>
               </div>
 
-              <small>
-                Leave the new password blank to keep the saved setup password.
-              </small>
+              <label class="check" style="margin-top: 0">
+                <input id="change_ip" type="checkbox" onchange="toggleIp()" />
+                <span>Change Slave setup WiFi IP address</span>
+              </label>
+
+              <div id="ip_fields" class="expand">
+                <div class="parameter-block">
+                  <label for="device_ip">Setup IP</label>
+                  <input
+                    id="device_ip"
+                    class="setup-ip-input"
+                    type="text"
+                    value="192.168.20.1"
+                    placeholder="192.168.xxx.xxx"
+                    inputmode="decimal"
+                    maxlength="15"
+                    aria-label="Setup IP address"
+                    aria-describedby="device_ip_help device_ip_alert"
+                    disabled
+                  />
+
+                  <small
+                    id="device_ip_alert"
+                    class="password-alert"
+                    role="alert"
+                  >
+                    Each IP segment must be between 0 and 255.
+                  </small>
+
+                  <small id="device_ip_help">
+                    Valid range: 192.168.0.0 – 192.168.255.255
+                  </small>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-heading">
+                <div>
+                  <h2>Slave Device WiFi</h2>
+                  <p class="section-note">
+                    Optional setup SSID and password change.
+                  </p>
+                </div>
+              </div>
+
+              <label class="check" style="margin-top: 0">
+                <input
+                  id="change_ap"
+                  type="checkbox"
+                  onchange="toggleSection('change_ap', 'ap_fields')"
+                />
+                <span>Configure Slave Device WiFi</span>
+              </label>
+
+              <div id="ap_fields" class="expand">
+                <label for="device_ssid">Setup WiFi name (SSID)</label>
+                <input id="device_ssid" maxlength="32" value="VHTemidity-002" />
+
+                <label for="device_password">New setup WiFi password</label>
+                <div class="password-row">
+                  <input
+                    id="device_password"
+                    type="password"
+                    maxlength="63"
+                    aria-describedby="device_password_alert"
+                  />
+
+                  <label class="show-pass">
+                    <input
+                      type="checkbox"
+                      onchange="
+                        togglePasswordVisibility('device_password', this)
+                      "
+                    />
+                    Show
+                  </label>
+                </div>
+
+                <small
+                  id="device_password_alert"
+                  class="password-alert"
+                  role="alert"
+                >
+                  Password must be at least 8 characters.
+                </small>
+
+                <label for="device_password_confirm"
+                  >Confirm setup WiFi password</label
+                >
+                <div class="password-row">
+                  <input
+                    id="device_password_confirm"
+                    type="password"
+                    maxlength="63"
+                  />
+
+                  <label class="show-pass">
+                    <input
+                      type="checkbox"
+                      onchange="
+                        togglePasswordVisibility(
+                          'device_password_confirm',
+                          this,
+                        )
+                      "
+                    />
+                    Show
+                  </label>
+                </div>
+
+                <small>
+                  Leave the new password blank to keep the saved setup password.
+                </small>
+              </div>
+            </section>
+
+            <div class="save-area">
+              <button class="save-button" type="submit">
+                Save Configuration
+              </button>
             </div>
-          </div>
+          </form>
 
-          <button type="submit">Save Configuration</button>
-        </form>
-
-        <p class="footer">VH Technology • VHTemidity Slave</p>
+          <p class="footer">VH Technology CO., LTD.</p>
+        </div>
       </div>
     </div>
 
@@ -191,7 +315,8 @@
             : "No Connect";
 
         status.textContent = text;
-        status.className = "connection-status " + text.toLowerCase().replace(" ", "-");
+        status.className =
+          "status-online " + text.toLowerCase().replace(" ", "-");
       }
 
       function setSlaveConnectionState(isConnected) {
@@ -202,8 +327,10 @@
 
       updateConnectionStatus();
 
-      function togglePasswordVisibility(id, c) {
-        document.getElementById(id).type = c.checked ? "text" : "password";
+      function togglePasswordVisibility(id, checkbox) {
+        document.getElementById(id).type = checkbox.checked
+          ? "text"
+          : "password";
       }
 
       function validatePassword(input) {
@@ -211,26 +338,35 @@
         var isTooShort = input.value.length > 0 && input.value.length < 8;
         input.classList.toggle("password-invalid", isTooShort);
         input.setAttribute("aria-invalid", String(isTooShort));
-        input.setCustomValidity(isTooShort ? "Password must be at least 8 characters." : "");
+        input.setCustomValidity(
+          isTooShort ? "Password must be at least 8 characters." : "",
+        );
         remark.classList.toggle("visible", isTooShort);
       }
 
       ["password", "device_password"].forEach(function (id) {
         var input = document.getElementById(id);
-        input.addEventListener("input", function () { validatePassword(input); });
+        input.addEventListener("input", function () {
+          validatePassword(input);
+        });
       });
 
       function toggleMasterPassword() {
         var on = document.getElementById("open_wifi").checked;
-        var p = document.getElementById("password");
-        p.disabled = on;
-        if (on) p.value = "";
-        validatePassword(p);
+        var password = document.getElementById("password");
+
+        password.disabled = on;
+
+        if (on) {
+          password.value = "";
+        }
+
+        validatePassword(password);
       }
 
       function toggleIp() {
         var on = document.getElementById("change_ip").checked;
-        document.getElementById("ip_fields").className = on ? "" : "hidden";
+        document.getElementById("ip_fields").classList.toggle("open", on);
         var input = document.getElementById("device_ip");
         input.disabled = !on;
         if (on) validateIpSuffix(input, false);
@@ -238,13 +374,16 @@
 
       function validateIpSuffix(input, showIncomplete) {
         var prefix = "192.168.";
-        var suffix = input.value.indexOf(prefix) === 0
-          ? input.value.slice(prefix.length)
-          : input.value;
+        var suffix =
+          input.value.indexOf(prefix) === 0
+            ? input.value.slice(prefix.length)
+            : input.value;
         var cleaned = suffix.replace(/[^0-9.]/g, "");
         var dot = cleaned.indexOf(".");
         if (dot !== -1) {
-          cleaned = cleaned.slice(0, dot + 1) + cleaned.slice(dot + 1).replace(/\./g, "");
+          cleaned =
+            cleaned.slice(0, dot + 1) +
+            cleaned.slice(dot + 1).replace(/\./g, "");
         }
         cleaned = cleaned.slice(0, 7);
         input.value = prefix + cleaned;
@@ -259,19 +398,29 @@
 
         input.classList.toggle("password-invalid", showError);
         input.setAttribute("aria-invalid", String(!isValid));
-        input.setCustomValidity(isValid ? "" : "Each IP segment must be between 0 and 255.");
+        input.setCustomValidity(
+          isValid ? "" : "Each IP segment must be between 0 and 255.",
+        );
         remark.classList.toggle("visible", showError);
       }
 
-      document.getElementById("device_ip").addEventListener("input", function () {
-        validateIpSuffix(this, false);
-      });
-      document.getElementById("device_ip").addEventListener("keydown", protectIpPrefix);
-      document.getElementById("device_ip").addEventListener("click", protectIpCaret);
+      document
+        .getElementById("device_ip")
+        .addEventListener("input", function () {
+          validateIpSuffix(this, false);
+        });
+      document
+        .getElementById("device_ip")
+        .addEventListener("keydown", protectIpPrefix);
+      document
+        .getElementById("device_ip")
+        .addEventListener("click", protectIpCaret);
 
       function protectIpPrefix(event) {
-        if ((event.key === "Backspace" && this.selectionStart <= 8) ||
-            (event.key === "Delete" && this.selectionStart < 8)) {
+        if (
+          (event.key === "Backspace" && this.selectionStart <= 8) ||
+          (event.key === "Delete" && this.selectionStart < 8)
+        ) {
           event.preventDefault();
           this.setSelectionRange(8, 8);
         }
@@ -280,15 +429,15 @@
       function protectIpCaret() {
         if (this.selectionStart < 8) this.setSelectionRange(8, 8);
       }
-      document.getElementById("device_ip").addEventListener("blur", function () {
-        validateIpSuffix(this, true);
-      });
+      document
+        .getElementById("device_ip")
+        .addEventListener("blur", function () {
+          validateIpSuffix(this, true);
+        });
 
-      function toggleSection(c, f) {
-        document.getElementById(f).className = document.getElementById(c)
-          .checked
-          ? ""
-          : "hidden";
+      function toggleSection(checkboxId, fieldId) {
+        var on = document.getElementById(checkboxId).checked;
+        document.getElementById(fieldId).classList.toggle("open", on);
       }
 
       function scanWifi() {
@@ -299,18 +448,21 @@
           { ssid: "VH-IOX16-AP", rssi: -43, encrypted: true },
           { ssid: "Office-WiFi", rssi: -61, encrypted: true },
           { ssid: "Guest", rssi: -74, encrypted: false },
-        ].forEach(function (n) {
-          var b = document.createElement("button");
-          b.type = "button";
-          b.className = "network";
-          b.textContent =
-            n.ssid + " (" + n.rssi + " dBm)" + (n.encrypted ? " 🔒" : "");
+        ].forEach(function (network) {
+          var button = document.createElement("button");
 
-          b.onclick = function () {
-            document.getElementById("ssid").value = n.ssid;
+          button.type = "button";
+          button.className = "network";
+
+          button.textContent =
+            network.ssid + "   " + "(" + network.rssi + " dBm" + ")" + "";
+
+          button.onclick = function () {
+            document.getElementById("ssid").value = network.ssid;
+            box.innerHTML = "";
           };
 
-          box.appendChild(b);
+          box.appendChild(button);
         });
       }
     </script>
